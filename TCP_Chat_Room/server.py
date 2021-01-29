@@ -13,7 +13,6 @@ else:
 ok_port = input("Choose a Port")
 port = ok_port
 port = int(port)
-# Starting Server
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((host, port))
 server.listen()
@@ -37,21 +36,17 @@ def handle(client):
             break
 def receive():
     while True:
-        # Accept Connection
         client_connected, address = server.accept()
 
-        # Request And Store Nickname
         client_connected.send('NICK'.encode('ascii'))
         nickname = client_connected.recv(1024).decode('ascii')
 
-        # Print And Broadcast Nickname
         print(f"User Connected Named {nickname}\n Address is {address} ")
         broadcast(f"{nickname}  just joined the party".encode('ascii'))
         clients[client_connected] = (nickname, address)
 
         client_connected.send('You are connected to the server!'.encode('ascii'))
 
-        # Start Handling Thread For Client
         thread = threading.Thread(target=handle, args=(client_connected,))
         thread.start()
 receive()
